@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../lib/vue.js"></script>
+    <script src="../lib/vue-resource.js"></script>
+    <script src="../lib/js/jquery.min.js"></script>
+    <script src="../lib/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../lib/css/bootstrap.css">
+    <style>
+        .panel-heading {
+            color: black !important;
+        }
+
+        .pagination {
+            margin: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle btns" type="button" id="dropdownMenu1"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        全部
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">全部</a></li>
+                        <li><a href="#">免费</a></li>
+                        <li><a href="#">情商</a></li>
+                        <li><a href="#">IQ</a></li>
+                        <li><a href="#">性格</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body form-inline">
+                <label for="">
+                    Name:
+                    <input type="text" v-model="name" class="form-control">
+                </label>
+                <label for="">
+                    Price:
+                    <input type="text" v-model="price" class="form-control">
+                </label>
+                <label for="">
+                    Num:
+                    <input type="text" v-model="num" class="form-control">
+                </label>
+                <label for="">
+                    State:
+                    <input type="text" v-model="state" class="form-control">
+                </label>
+                <input type="button" value="添加" @click="add" class="btn btn-primary">
+                <label for="">
+                    搜索:
+                    <input type="text" v-model="keywords" class="form-control">
+                </label>
+            </div>
+        </div>
+
+
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Num</th>
+                    <th>addCtime</th>
+                    <th>state</th>
+                    <th>Operation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in list" :key="item.id">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.goodsname }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.num }}</td>
+                    <td>{{ item.update_time }}</td>
+                    <td>{{ item.state}}</td>
+                    <td>
+                        <a href="#" @click.prevent="del(item.id)">删除</a>
+                        <a href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap"
+                            @click.prevent="updata(item.id, item.goodsname, item.price, item.num, item.state)">修改</a>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="exampleModalLabel">
+                                            修改商品：
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="recipient-name" class="control-label">
+                                                    Name:
+                                                </label>
+                                                <input type="text" class="form-control" id="recipient-name"
+                                                    v-model="goodsname">
+                                                <label for="recipient-name" class="control-label">
+                                                    Price:
+                                                </label>
+                                                <input type="text" class="form-control" id="recipient-name"
+                                                    v-model="prices">
+                                                <label for="recipient-name" class="control-label">
+                                                    Num:
+                                                </label>
+                                                <input type="text" class="form-control" id="recipient-name"
+                                                    v-model="nums">
+
+                                                <label for="recipient-name" class="control-label">
+                                                    state:
+                                                </label>
+                                                <input type="text" class="form-control" id="recipient-name"
+                                                    v-model="states">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                                            @click="updataR(goodsname, prices, nums, states)">确定
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <script>
+        Vue.http.options.emulateJSON = true
+        var vue = new Vue({
+            el: '.app',
+            data: {
+                ids: '', //点击更新替换过的ID
+                name: '',
+                goodsname: '',
+                price: '',
+                prices: '',
+                num: '',
+                nums: '',
+                keywords: '',
+                state: '',
+                states: '',
+                list: [
+                    { id: "1", goodsname: "SHL测试系统1", price: "126.00", num: "666", update_time: new Date(), state: "免费" },
+                    { id: "2", goodsname: "SHL测试系统1", price: "126.00", num: "666", update_time: new Date(), state: "免费" },
+                    { id: "3", goodsname: "SHL测试系统1", price: "126.00", num: "666", update_time: new Date(), state: "免费" }
+                ]
+            },
+            created() {
+                this.postInfo();
+            },
+            methods: {
+                postInfo() {
+
+                    this.$http.post('http://a.fhyiii.cn/goods/selectgoods', { start: 0, end: 99 }).then(result => {
+                        var result = result.body;
+                        // console.log(result)
+                        if (result.status === 1) {
+                            this.list = result.data
+                        } else {
+                            alert("获取数据失败")
+                        }
+                    })
+
+                },
+                add() {
+         
+                    this.$http.post("http://a.fhyiii.cn/index/goods/addgoods", { goodsname: this.name, price: this.price, num: this.num, state: this.state }).then(result => {
+                        //   console.log(result.body);
+                        
+                        var result = result.body
+                        if (result.status === "true") {
+                            this.postInfo();
+                            this.name = ""
+                        } else {
+                            alert(result.message)
+                        }
+                    })
+
+                },
+                del(id) {
+
+                    this.$http.post("http://a.fhyiii.cn/goods/deletegoods", { id: id }).then(result => {
+                        console.log(result.body)
+                        var result = result.body
+                        if (result.status === "true") {
+                            this.postInfo();
+                            alert(result.message)
+                        } else {
+                            alert(result.message)
+                        }
+                    })
+
+                },
+                updata(id, goodsname, price, num, state) {
+
+                    this.ids = id
+                    this.goodsname = goodsname
+                    this.prices = price
+                    this.nums = num
+                    this.states = state
+
+                },
+                updataR(goodsname, price, num, state) {
+
+                    this.$http.post("http://a.fhyiii.cn/goods/updategoods", { id: this.ids, goodsname: goodsname, price: price, num: num, state: state }).then(result => {
+                        console.log(result.body)
+                        var result = result.body
+                        if (result.status === "true") {
+                            this.postInfo();
+                            alert(result.message)
+                        } else {
+                            alert(result.message)
+                        }
+                    });
+
+                }
+
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../lib/vue.js"></script>
+    <style>
+        li {
+            list-style: none;
+            border: 1px dashed black;
+            margin: 5px;
+            line-height: 35px;
+            padding-left: 5px;
+            font-size: 12px;
+        }
+
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            transform: translateY(80px);
+        }
+
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.6s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+        <div>
+            <label for="">
+                ID:
+                <input type="text" v-model="id">
+            </label>
+
+            <label for="">
+                Name:
+                <input type="text" v-model="name">
+            </label>
+
+            <input type="button" @click="add" value="添加">
+        </div>
+
+        <ul>
+            <transition-group>
+
+                <li v-for="item in list" :key="item.id">
+                    {{ item.id }}----------------{{ item.name }}
+                </li>
+
+            </transition-group>
+
+
+        </ul>
+
+    </div>
+    <script>
+        var vue = new Vue({
+            el: '.app',
+            data: {
+                id: "",
+                name: "",
+                list: [
+
+                    { id: 1, name: "手机" },
+                    { id: 2, name: "手表" }
+
+                ]
+            },
+            methods: {
+
+                add() {
+                    this.list.push({ id: this.id, name: this.name })
+                    this.id = this.name = "";
+                }
+
+
+            }
+        });
+    </script>
+</body>
+
+</html>
